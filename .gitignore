@@ -1,0 +1,58 @@
+# OS
+.DS_Store
+
+# Environment
+.env
+
+# Runtime data
+data/
+videos/
+*.db
+logs/
+*.pid
+
+# Go
+backend/kvtube-go
+backend/bin/
+*.exe
+
+# Node
+node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/dist-desktop/
+
+# Mobile build outputs
+frontend/android/app/build/
+frontend/android/.gradle/
+frontend/ios/App/build/
+frontend/ios/App/Pods/
+
+# Desktop packaged binaries and generated artifacts
+frontend/desktop-bin/
+
+# Secrets - NEVER commit these
+cookies.txt
+*.pem
+*.key
+credentials.json
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Logs
+*.log
+
+# Debug files
+*_debug.txt
+
+# Temporary
+tmp_*/
+tmp/
+
+# Windows reserved names
+nul
+.gemini/

@@ -1,0 +1,36 @@
+services:
+  kv-tube:
+    # Pull from Docker Hub (recommended)
+    image: kechettreo/tubepre:latest
+
+    # Or build locally (uncomment to use instead)
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    #   args:
+    #     NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://103.116.38.112:8981}
+
+    container_name: kv-tube
+    platform: linux/amd64
+    restart: unless-stopped
+
+    ports:
+      - "5011:3000"   # Frontend (Next.js)
+      - "8981:8080"   # Backend API (Go)
+
+    volumes:
+      - ./data:/app/data
+
+    environment:
+      - KVTUBE_DATA_DIR=/app/data
+      - GIN_MODE=release
+      - NODE_ENV=production
+      - AIAUTOTOOL_BASE_URL=${AIAUTOTOOL_BASE_URL:-https://api9.aiautotool.com/v1}
+      - AIAUTOTOOL_MODEL=${AIAUTOTOOL_MODEL:-cx/gpt-5.5}
+      - AIAUTOTOOL_API_KEY=${AIAUTOTOOL_API_KEY:-}
+      # CORS - replace with your actual domain(s)
+      # Example: https://kv-tube.example.com,http://localhost:5011
+      - CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000,http://localhost:5011,http://103.116.38.112:5011
+
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"

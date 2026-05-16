@@ -1,0 +1,46 @@
+Product Requirements Document (PRD) - KV-Tube
+1. Product Overview
+Product Name: KV-Tube Version: 1.0 (In Development) Description: KV-Tube is a comprehensive media center web application designed to provide an ad-free YouTube experience, a curated movie streaming service, and a local video management system. It emphasizes privacy, absence of advertisements, and utility features like AI summarization and language learning tools.
+
+2. User Personas
+The Binge Watcher: Wants uninterrupted access to YouTube content and movies without ads.
+The Archivist: Maintains a local collection of videos and wants a clean interface to organize and watch them securely.
+The Learner: Uses video content for educational purposes, specifically English learning.
+The Tech Enthusiast: Appreciates PWA support, torrent integration, and customizable settings.
+3. Core Features
+3.1. YouTube Viewer (Home)
+Ad-Free Experience: Plays YouTube videos without third-party advertisements.
+Search: Integrated search bar powered by yt-dlp to find videos, channels, and playlists.
+Playback: Custom video player with support for quality selection and playback speed.
+AI Summarization: Feature to summarize video content using Google Gemini API (Optional).
+3.2. local Video Manager ("My Videos")
+Secure Access: Password-protected section for personal video collections.
+File Management: Scans local directories for video files.
+Metadata: Extracts metadata (duration, format) and generates thumbnails using FFmpeg/MoviePy.
+Playback: Native HTML5 player for local files.
+3.3. Utilities
+Torrent Player: Interface for streaming/playing video content via torrents.
+Playlist Manager: Create and manage custom playlists of YouTube videos.
+Camera/Photo: ("Chụp ảnh") Feature to capture or manage photos (Webcam integration).
+Configuration: Web-based settings to manage application behavior (e.g., password, storage paths).
+4. Technical Architecture
+Backend: Python / Flask
+Frontend: HTML5, CSS3, JavaScript (Vanilla)
+Database/Storage: JSON-based local storage and file system.
+Video Processing: yt-dlp (YouTube), FFmpeg (Conversion/Thumbnail), MoviePy (Optional).
+AI Service: Google Gemini API (for summarization).
+Deployment: Docker container support (xehopnet/kctube).
+5. Non-Functional Requirements
+Performance: Fast load times and responsive UI.
+Compatibility: PWA-ready for installation on desktop and mobile.
+Reliability: graceful degradation if optional dependencies (MoviePy, Gemini) are missing.
+Privacy: No user tracking or external analytics.
+6. Known Limitations
+Search Reliability: Dependent on yt-dlp stability and YouTube's anti-bot measures.
+External APIs: Movie features rely on third-party APIs which may have downtime.
+Dependency Management: Some Python libraries (MoviePy, Numpy) require compilation tools.
+7. Future Roadmap
+Database: Migrate from JSON to SQLite for better performance with large libraries.
+User Accounts: Individual user profiles and history.
+Offline Mode: Enhanced offline capabilities for PWA.
+Casting: Support for Chromecast/AirPlay.
