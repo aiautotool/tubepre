@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KV-Tube Embed / Stream Ads Test</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #111;
+      color: #eee;
+    }
+    body {
+      margin: 0;
+      padding: 24px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 24px;
+    }
+    p {
+      color: #bbb;
+      line-height: 1.5;
+    }
+    .controls {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) minmax(220px, 1fr) auto;
+      gap: 10px;
+      margin: 20px 0;
+      align-items: end;
+    }
+    label {
+      display: grid;
+      gap: 6px;
+      color: #ddd;
+      font-size: 13px;
+    }
+    input {
+      height: 38px;
+      border: 1px solid #444;
+      border-radius: 6px;
+      background: #181818;
+      color: #fff;
+      padding: 0 10px;
+      font-size: 14px;
+    }
+    button {
+      height: 40px;
+      border: 0;
+      border-radius: 6px;
+      background: #ff0033;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0 16px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .panel {
+      border: 1px solid #333;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #181818;
+    }
+    .panel header {
+      padding: 12px;
+      border-bottom: 1px solid #333;
+      font-weight: 700;
+    }
+    .player {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+    }
+    iframe, video {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #000;
+    }
+    .note {
+      padding: 12px;
+      color: #bbb;
+      font-size: 13px;
+      border-top: 1px solid #333;
+      min-height: 48px;
+      word-break: break-word;
+    }
+    pre {
+      margin: 16px 0 0;
+      padding: 12px;
+      border-radius: 8px;
+      background: #080808;
+      color: #cfcfcf;
+      overflow: auto;
+      min-height: 100px;
+      white-space: pre-wrap;
+    }
+    @media (max-width: 900px) {
+      body {
+        padding: 14px;
+      }
+      .controls,
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>KV-Tube Embed / Stream Ads Test</h1>
+  <p>
+    Trang này so sánh hai cách phát cùng một video: YouTube iframe chính thức và
+    direct stream lấy từ API <code>/api/get_stream_info</code>. Nếu direct stream phát được,
+    nó chỉ là media URL, không có YouTube ad stack nên thường không có quảng cáo.
+  </p>
+
+  <div class="controls">
+    <label>
+      Video ID
+      <input id="videoId" value="dQw4w9WgXcQ" spellcheck="false">
+    </label>
+    <label>
+      API base
+      <input id="apiBase" value="" placeholder="De trong de dung same-origin, hoac http://103.116.38.112:8981">
+    </label>
+    <button id="runBtn">Test</button>
+  </div>
+
+  <div class="grid">
+    <section class="panel">
+      <header>1. YouTube iframe embed</header>
+      <div class="player" id="iframeHost"></div>
+      <div class="note">
+        Chay bang player cua YouTube. Neu co quang cao hay khong la do YouTube quyet dinh
+        theo video, tai khoan, region, inventory, cookie va ad blocker.
+      </div>
+    </section>
+
+    <section class="panel">
+      <header>2. Direct stream qua yt-dlp API</header>
+      <div class="player">
+        <video id="nativeVideo" controls playsinline></video>
+      </div>
+      <div class="note" id="streamNote">
+        Bam Test de goi API va gan <code>stream_url</code> vao the video.
+      </div>
+    </section>
+  </div>
+
+  <pre id="log"></pre>
+
+  <script>
+    const videoIdInput = document.getElementById('videoId');
+    const apiBaseInput = document.getElementById('apiBase');
+    const iframeHost = document.getElementById('iframeHost');
+    const nativeVideo = document.getElementById('nativeVideo');
+    const streamNote = document.getElementById('streamNote');
+    const logEl = document.getElementById('log');
+    const runBtn = document.getElementById('runBtn');
+
+    function log(message, data) {
+      const line = data === undefined ? message : `${message}\n${JSON.stringify(data, null, 2)}`;
+      logEl.textContent = `${new Date().toLocaleTimeString()} ${line}\n\n${logEl.textContent}`;
+    }
+
+    function getApiUrl(path) {
+      const base = apiBaseInput.value.trim().replace(/\/+$/, '');
+      if (!base) return path;
+      return `${base}${path}`;
+    }
+
+    async function runTest() {
+      const videoId = videoIdInput.value.trim();
+      if (!videoId) {
+        alert('Nhap video ID');
+        return;
+      }
+
+      logEl.textContent = '';
+      nativeVideo.removeAttribute('src');
+      nativeVideo.load();
+      streamNote.textContent = 'Dang lay stream_url...';
+
+      const iframeParams = new URLSearchParams({
+        autoplay: '0',
+        controls: '1',
+        rel: '0',
+        modestbranding: '1',
+        playsinline: '1',
+      });
+      const iframeSrc = `https://www.youtube.com/embed/${encodeURIComponent(videoId)}?${iframeParams}`;
+      iframeHost.innerHTML = `<iframe src="${iframeSrc}" title="YouTube iframe test" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+      log('Iframe src:', { iframeSrc });
+
+      const apiUrl = getApiUrl(`/api/get_stream_info?v=${encodeURIComponent(videoId)}`);
+      log('Fetching stream info:', { apiUrl });
+
+      try {
+        const response = await fetch(apiUrl, { cache: 'no-store' });
+        const data = await response.json();
+        log('Stream API response:', data);
+
+        if (!response.ok || data.error || !data.stream_url) {
+          streamNote.textContent = `Khong lay duoc stream_url: ${data.error || response.status}`;
+          return;
+        }
+
+        nativeVideo.src = data.stream_url;
+        nativeVideo.load();
+        streamNote.textContent = `Dang phat format ${data.format_id || 'unknown'}. URL host: ${new URL(data.stream_url).host}`;
+      } catch (error) {
+        streamNote.textContent = `Loi: ${error.message}`;
+        log('Stream API error:', { message: error.message });
+      }
+    }
+
+    runBtn.addEventListener('click', runTest);
+    runTest();
+  </script>
+</body>
+</html>
