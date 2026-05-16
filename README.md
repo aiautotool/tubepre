@@ -12,6 +12,26 @@ KV-Tube la ung dung xem YouTube tu host rieng, gom backend Go, frontend Next.js,
 | Android app | Capacitor Android | `frontend/android` | phu thuoc URL web |
 | Docker app | Go + Next.js + supervisord | root repo | `5011`, `8981` |
 
+## Tai ban build hien co
+
+Luu y: cac file build ben duoi la artifact tao ra sau khi build trong workspace/release, khong nen commit truc tiep vao source Git vi dung luong lon. Khi phat hanh chinh thuc, upload cac file nay vao GitHub Releases roi cap nhat link release tuong ung.
+
+| Nen tang | File tai | Ghi chu |
+| --- | --- | --- |
+| Android APK | [`frontend/android/app/build/outputs/apk/debug/app-debug.apk`](frontend/android/app/build/outputs/apk/debug/app-debug.apk) | Debug APK, load web tu `http://103.116.38.112:5011` |
+| macOS Apple Silicon | [`frontend/dist-desktop/KV-Tube-0.1.0-arm64.dmg`](frontend/dist-desktop/KV-Tube-0.1.0-arm64.dmg) | Ban self-contained, chay backend va web local trong app |
+| macOS Intel | [`frontend/dist-desktop/KV-Tube-0.1.0.dmg`](frontend/dist-desktop/KV-Tube-0.1.0.dmg) | Ban self-contained, chay backend va web local trong app |
+| Windows | [`frontend/dist-desktop/KV-Tube Setup 0.1.0.exe`](frontend/dist-desktop/KV-Tube%20Setup%200.1.0.exe) | Neu co artifact sau khi build Windows |
+| Linux | [`frontend/dist-desktop/KV-Tube-0.1.0.AppImage`](frontend/dist-desktop/KV-Tube-0.1.0.AppImage) | Neu co artifact sau khi build Linux |
+| Docker | [`kechettreo/tubepre:latest`](https://hub.docker.com/r/kechettreo/tubepre) | Image Docker Hub dang dung cho VPS |
+
+## Phan biet cach app load server
+
+- Android APK load web tu VPS qua `KVTUBE_ANDROID_SERVER_URL`, mac dinh `http://103.116.38.112:5011`.
+- Android web runtime goi API qua `NEXT_PUBLIC_API_BASE_URL`, mac dinh khi build Docker/APK la `http://103.116.38.112:8981`.
+- macOS app la ban self-contained: Electron tu chay backend Go local, tu chay Next.js local va khong can `http://103.116.38.112:5011`.
+- Docker/VPS chay frontend o `http://103.116.38.112:5011` va backend API o `http://103.116.38.112:8981`.
+
 ## Yeu cau chung
 
 - Git
@@ -207,7 +227,7 @@ go build -o kv-tube.exe .
 
 ## Build desktop app theo OS
 
-Desktop app la Electron wrapper. Mac dinh no load URL `http://103.116.38.112:5011`. De dong goi ban tro ve server rieng, set `KVTUBE_DESKTOP_SERVER_URL` truoc khi build.
+Desktop app la Electron app. Ban macOS hien tai dong goi self-contained: app tu chay backend Go local, Next.js local va cac tool can thiet trong app bundle. Neu dat `KVTUBE_DESKTOP_SERVER_URL`, Electron se load URL do thay vi server bundled, chi nen dung cho debug.
 
 ### macOS
 
@@ -216,7 +236,8 @@ Build tren may macOS.
 ```bash
 cd frontend
 npm install
-KVTUBE_DESKTOP_SERVER_URL=https://your-kv-tube.example.com npm run desktop:mac
+npm run build
+npm run desktop:mac
 ```
 
 Build rieng Intel:
@@ -314,8 +335,8 @@ Luu y: bien URL trong `capacitor.config.ts` dang ten `KVTUBE_ANDROID_SERVER_URL`
 | `KVTUBE_DATA_DIR` | `./data` hoac `/app/data` | Thu muc SQLite va du lieu |
 | `GIN_MODE` | `release` | Che do Gin |
 | `CORS_ALLOWED_ORIGINS` | tuy moi truong | Danh sach origin duoc phep goi API |
-| `NEXT_PUBLIC_API_BASE_URL` | `http://localhost:8080` | Backend ma frontend proxy toi khi build/chay Next.js |
-| `KVTUBE_DESKTOP_SERVER_URL` | `http://103.116.38.112:5011` | URL web ma app desktop load |
+| `NEXT_PUBLIC_API_BASE_URL` | rong | API base public cho Android runtime; desktop/web mac dinh dung `/api` same-origin |
+| `KVTUBE_DESKTOP_SERVER_URL` | rong | Tuy chon debug: URL web ma app desktop load thay cho server bundled |
 | `KVTUBE_ANDROID_SERVER_URL` | `http://103.116.38.112:5011` | URL web ma app mobile load |
 | `AIAUTOTOOL_BASE_URL` | `https://api9.aiautotool.com/v1` | Base URL AI API trong Docker Compose |
 | `AIAUTOTOOL_MODEL` | `cx/gpt-5.5` | Model AI trong Docker Compose |
