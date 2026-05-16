@@ -23,7 +23,7 @@ Luu y: cac file build ben duoi la artifact tao ra sau khi build trong workspace/
 | macOS Intel | [`frontend/dist-desktop/KV-Tube-0.1.0.dmg`](frontend/dist-desktop/KV-Tube-0.1.0.dmg) | Ban self-contained, chay backend va web local trong app |
 | Windows | [`frontend/dist-desktop/KV-Tube Setup 0.1.0.exe`](frontend/dist-desktop/KV-Tube%20Setup%200.1.0.exe) | Neu co artifact sau khi build Windows |
 | Linux | [`frontend/dist-desktop/KV-Tube-0.1.0.AppImage`](frontend/dist-desktop/KV-Tube-0.1.0.AppImage) | Neu co artifact sau khi build Linux |
-| Docker | [`kechettreo/tubepre:latest`](https://hub.docker.com/r/kechettreo/tubepre) | Image Docker Hub dang dung cho VPS |
+| Docker | [`kechettreo/tubepre:latest`](https://hub.docker.com/repository/docker/kechettreo/tubepre/general) | Image Docker Hub dang dung cho VPS |
 
 ## Phan biet cach app load server
 
@@ -123,10 +123,18 @@ cd kv-tube
 
 ## Chay nhanh bang Docker
 
-File `docker-compose.yml` hien tai dung image `kechettreo/tubepre:latest`.
+Docker Hub:
+
+- Repository: https://hub.docker.com/repository/docker/kechettreo/tubepre/general
+- Image: `kechettreo/tubepre:latest`
+
+File `docker-compose.yml` hien tai da cau hinh san image `kechettreo/tubepre:latest`.
+
+Chay bang Docker Compose:
 
 ```bash
 mkdir -p data
+docker compose pull
 docker compose up -d
 ```
 
@@ -145,6 +153,31 @@ Dung app:
 
 ```bash
 docker compose down
+```
+
+Chay nhanh bang `docker run` neu khong dung Compose:
+
+```bash
+mkdir -p data
+docker pull kechettreo/tubepre:latest
+docker run -d \
+  --name kv-tube \
+  --restart unless-stopped \
+  -p 5011:3000 \
+  -p 8981:8080 \
+  -v "$PWD/data:/app/data" \
+  -e KVTUBE_DATA_DIR=/app/data \
+  -e GIN_MODE=release \
+  -e NODE_ENV=production \
+  -e CORS_ALLOWED_ORIGINS=http://localhost:5011,http://103.116.38.112:5011 \
+  kechettreo/tubepre:latest
+```
+
+Cap nhat container len image moi nhat:
+
+```bash
+docker pull kechettreo/tubepre:latest
+docker compose up -d --force-recreate
 ```
 
 Neu muon build image local thay vi pull image co san, sua `docker-compose.yml`: comment dong `image: kechettreo/tubepre:latest`, bo comment khoi `build`, roi chay:
