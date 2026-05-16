@@ -23,7 +23,7 @@ Luu y: cac file build ben duoi la artifact tao ra sau khi build trong workspace/
 | macOS Intel | [`frontend/dist-desktop/KV-Tube-0.1.0.dmg`](frontend/dist-desktop/KV-Tube-0.1.0.dmg) | Ban self-contained, chay backend va web local trong app |
 | Windows | [`frontend/dist-desktop/KV-Tube Setup 0.1.0.exe`](frontend/dist-desktop/KV-Tube%20Setup%200.1.0.exe) | Neu co artifact sau khi build Windows |
 | Linux | [`frontend/dist-desktop/KV-Tube-0.1.0.AppImage`](frontend/dist-desktop/KV-Tube-0.1.0.AppImage) | Neu co artifact sau khi build Linux |
-| Docker | [`kechettreo/tubepre:latest`](https://hub.docker.com/repository/docker/kechettreo/tubepre/general) | Image Docker Hub dang dung cho VPS |
+| Docker | [`kechettreo/tubepre:latest`](https://hub.docker.com/r/kechettreo/tubepre) | Image Docker Hub dang dung cho VPS |
 
 ## Phan biet cach app load server
 
@@ -125,7 +125,7 @@ cd kv-tube
 
 Docker Hub:
 
-- Repository: https://hub.docker.com/repository/docker/kechettreo/tubepre/general
+- Repository: https://hub.docker.com/r/kechettreo/tubepre
 - Image: `kechettreo/tubepre:latest`
 
 File `docker-compose.yml` hien tai da cau hinh san image `kechettreo/tubepre:latest`.
